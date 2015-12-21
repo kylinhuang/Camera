@@ -5,8 +5,10 @@ package com.kylin.camera;
  */
 public interface CameraCallback {
 
-    public static int mCameraStatus = 0 ;
+    public static final int CAMERA_OPEN = 1 ;
+    public static final int CAMERA_PRIVE = 2 ;
+    public static final int CAMERA_SWITCH = 3 ;
 
-    public
+    public void error(int status);
 
 }

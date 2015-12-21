@@ -7,26 +7,31 @@ public class CameraBaseHelper  implements ICamera{
     /**
      * 开启相机
      */
-    public void openCamera(){};
+    public void openCamera(){}
 
     /**
      * 关闭相机
      */
-    public void closeCamera(){};
+    public void closeCamera(){}
 
     /**
      * 切换相机
      */
-    public void switchCamera(){};
+    public void switchCamera(){}
 
 
     /**
      * 释放相机
      */
-    public void releaseCamera(){};
+    public void releaseCamera(){}
 
     /**
      * 开始预览
      */
-    public void startCameraPreview(){};
+    public void startCameraPreview(){}
+
+    /**
+     * 拍照
+     */
+    public void takePicture(){}
 }
