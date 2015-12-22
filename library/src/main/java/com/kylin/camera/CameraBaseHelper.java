@@ -1,8 +1,12 @@
 package com.kylin.camera;
 
+import android.hardware.Camera;
+import android.view.SurfaceHolder;
+
 /**
  */
 public class CameraBaseHelper  implements ICamera{
+
 
     /**
      * 开启相机
@@ -33,5 +37,14 @@ public class CameraBaseHelper  implements ICamera{
     /**
      * 拍照
      */
-    public void takePicture(){}
+    @Override
+    public void takePicture(Camera.PictureCallback mPictureCallback) {
+
+    }
+
+
+    @Override
+    public void setSurfaceHolder(SurfaceHolder mSurfaceHolder) {
+
+    }
 }

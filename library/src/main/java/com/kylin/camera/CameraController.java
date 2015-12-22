@@ -1,6 +1,7 @@
 package com.kylin.camera;
 
 import android.graphics.SurfaceTexture;
+import android.hardware.Camera;
 import android.os.Build;
 import android.support.v4.util.SparseArrayCompat;
 import android.view.SurfaceHolder;
@@ -39,7 +40,7 @@ public class CameraController  implements ICamera {
     /**
      * 使用 Camera API
      */
-    private Boolean useAPI(int api){
+    public Boolean useAPI(int api){
         if (  !isSupportCamera2 ){ //不支持Camera2
             if ( api == CAMERA_API2  ){
                 userApi = CAMERA_API ;
@@ -64,6 +65,7 @@ public class CameraController  implements ICamera {
         }
         return false ;
     }
+
 
     @Override
     public void openCamera() {
@@ -96,16 +98,22 @@ public class CameraController  implements ICamera {
         mCameraHelper.startCameraPreview();
     }
 
+    @Override
+    public void takePicture(Camera.PictureCallback mPictureCallback) {
+        CameraBaseHelper mCameraHelper = mCameraModeSupported.get(userApi);
+        mCameraHelper.takePicture(mPictureCallback);
+    }
+
+    @Override
+    public void setSurfaceHolder(SurfaceHolder mSurfaceHolder) {
+        CameraBaseHelper mCameraHelper = mCameraModeSupported.get(userApi);
+        mCameraHelper.setSurfaceHolder(mSurfaceHolder);
+    }
 
     public void setSurface(SurfaceTexture mSurfaceTexture){
-//        mSurfaceTexture.
 
     }
 
-    public void setSurfaceHolder(SurfaceHolder mSurfaceHolder){
-//        mSurfaceTexture.
-
-    }
 
 
 

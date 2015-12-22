@@ -1,32 +1,38 @@
 package com.kylin.camera;
 
+import android.hardware.Camera;
+import android.view.SurfaceHolder;
+
 /**
  */
 public interface ICamera {
-
     /**
      * 开启相机
      */
-    public void openCamera();
+    void openCamera();
 
     /**
      * 关闭相机
      */
-    public void closeCamera();
+    void closeCamera();
 
     /**
      * 切换相机
      */
-    public void switchCamera();
+    void switchCamera();
 
 
     /**
      * 释放相机
      */
-    public void releaseCamera();
+    void releaseCamera();
 
     /**
      * 开始预览
      */
-    public void startCameraPreview();
+    void startCameraPreview();
+
+    void takePicture(Camera.PictureCallback mPictureCallback);
+
+    void setSurfaceHolder(SurfaceHolder mSurfaceHolder);
 }

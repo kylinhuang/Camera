@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package com.kylin.camera;
+package com.kylin.camera.help;
 
-import android.content.Context;
 import android.hardware.Camera;
 import android.os.AsyncTask;
 import android.util.Log;
-
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,7 +43,7 @@ final class AutoFocusManager implements Camera.AutoFocusCallback {
   private final Camera camera;
   private AsyncTask<?,?,?> outstandingTask;
 
-  AutoFocusManager(Context context, Camera camera) {
+  public AutoFocusManager( Camera camera) {
     this.camera = camera;
     String currentFocusMode = camera.getParameters().getFocusMode();
     useAutoFocus = isSupport_auto_focus

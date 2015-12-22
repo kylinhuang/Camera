@@ -60,8 +60,8 @@ public class Camera2Helper  extends CameraBaseHelper{
 
     }
 
-    @Override
-    public void takePicture() {
+//    @Override
+//    public void takePicture() {
         //创建构建者，配置参数
 //        mCaptureBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_ZERO_SHUTTER_LAG);
 //        if (mFormat == ImageFormat.RAW_SENSOR) {
@@ -78,5 +78,5 @@ public class Camera2Helper  extends CameraBaseHelper{
 //        previewBuilder2CaptureBuilder();
 //        mState = STATE_CAPTURE;
 //        mCameraDevice.createCaptureSession(mOutputSurfaces, mSessionCaptureStateCallback, mHandler);
-    }
+//    }
 }
