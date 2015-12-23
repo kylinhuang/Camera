@@ -2,6 +2,7 @@ package com.kylin.camera;
 
 import android.hardware.Camera;
 import android.view.SurfaceHolder;
+import android.view.TextureView;
 
 /**
  */
@@ -62,5 +63,8 @@ public class CameraBaseHelper  implements ICamera{
         this.mPreviewCallback = mPreviewCallback ;
     }
 
+    @Override
+    public void setTextureView(TextureView mTextureView) {
+    }
 
 }

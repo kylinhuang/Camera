@@ -5,16 +5,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Bundle;
-import android.view.SurfaceView;
+import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
 
 import com.kylin.camera.CameraController;
 import com.kylin.camera.CameraStatusCallback;
 
-public class CameraActivity extends Activity implements View.OnClickListener {
+public class CameraTureActivity extends Activity implements View.OnClickListener {
 
-    private SurfaceView surfaceview;
+    private TextureView mTextureView;
     private Button btTakePicture;
     private Button btSwitchCamera;
     /**
@@ -51,17 +51,18 @@ public class CameraActivity extends Activity implements View.OnClickListener {
     /**
      */
     public static void actionStart(Context context ) {
-        Intent intent = new Intent(context, CameraActivity.class);
+        Intent intent = new Intent(context, CameraTureActivity.class);
         context.startActivity(intent);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_camera);
+        setContentView(R.layout.activity_camera_true);
         initView();
         CameraController.getInstance().useAPI(CameraController.CAMERA_API); //
-        CameraController.getInstance().setSurfaceHolder(surfaceview.getHolder());
+        CameraController.getInstance().setTextureView(mTextureView);
+
         CameraController.getInstance().setCameraStatusCallback(mCameraStatusCallback);
         CameraController.getInstance().setPreviewCallback(mPreviewCallback);
 
@@ -79,7 +80,7 @@ public class CameraActivity extends Activity implements View.OnClickListener {
     }
 
     private void initView() {
-        surfaceview = (SurfaceView)findViewById(R.id.camera_surfaceview);
+        mTextureView = (TextureView)findViewById(R.id.camera_textureview);
         btTakePicture = (Button)findViewById(R.id.bt_takepicture);
         btSwitchCamera = (Button)findViewById(R.id.bt_switch_camera);
 

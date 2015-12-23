@@ -2,6 +2,7 @@ package com.kylin.camera;
 
 import android.hardware.Camera;
 import android.view.SurfaceHolder;
+import android.view.TextureView;
 
 /**
  */
@@ -36,6 +37,6 @@ public interface ICamera {
     void takePicture(Camera.PictureCallback mPictureCallback);
 
     void setSurfaceHolder(SurfaceHolder mSurfaceHolder);
-
+    void setTextureView(TextureView mTextureView);
 
 }

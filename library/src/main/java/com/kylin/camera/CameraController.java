@@ -1,10 +1,10 @@
 package com.kylin.camera;
 
-import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.os.Build;
 import android.support.v4.util.SparseArrayCompat;
 import android.view.SurfaceHolder;
+import android.view.TextureView;
 
 /**
  */
@@ -29,6 +29,7 @@ public class CameraController  implements ICamera {
     }
 
     private Camera.PreviewCallback mPreviewCallback ;
+    private TextureView mTextureView;
 
     public static CameraController getInstance() {
         synchronized (CameraHelper.class) {
@@ -121,8 +122,10 @@ public class CameraController  implements ICamera {
         mCameraHelper.setSurfaceHolder(mSurfaceHolder);
     }
 
-    public void setSurface(SurfaceTexture mSurfaceTexture){
-
+    public void setTextureView(TextureView mTextureView){
+        this.mTextureView = mTextureView ;
+        CameraBaseHelper mCameraHelper = mCameraModeSupported.get(userApi);
+        mCameraHelper.setTextureView(mTextureView);
     }
 
     /**

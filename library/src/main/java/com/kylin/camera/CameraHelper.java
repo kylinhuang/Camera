@@ -65,8 +65,7 @@ public class CameraHelper  extends CameraBaseHelper {
     @Override
     public void switchCamera() {
         mCurCameraId =  ++mCurCameraId % mTotalCameraCount ;
-        if (null != camera)
-            camera.release();
+        releaseCamera();
         openCamera();
         startCameraPreview();
     }
@@ -75,6 +74,7 @@ public class CameraHelper  extends CameraBaseHelper {
     public void releaseCamera() {
         if (null != camera ){
             autoFocusManager.stop();
+            mSurfaceHolder.removeCallback(mCallback);
             camera.setPreviewCallback(null);
             camera.release();
         }
@@ -160,12 +160,7 @@ public class CameraHelper  extends CameraBaseHelper {
 
         @Override
         public void surfaceDestroyed(SurfaceHolder holder) {
-            if ( null != camera ) {
-                camera.stopPreview();
-                camera.release();//加上这句，就OK！
-                camera = null;
-            }
-
+            releaseCamera();
         }
     };
 

@@ -14,18 +14,18 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
 
     private void initView() {
-        findViewById(R.id.bt_camera).setOnClickListener(this);
-        findViewById(R.id.bt_camera2).setOnClickListener(this);
+        findViewById(R.id.bt_camera_surface).setOnClickListener(this);
+        findViewById(R.id.bt_camera_tureview).setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.bt_camera :
-                CameraActivity.actionStart(MainActivity.this);
+            case R.id.bt_camera_surface :
+                CameraSurfaceActivity.actionStart(MainActivity.this);
                 break;
-            case R.id.bt_camera2 :
-
+            case R.id.bt_camera_tureview :
+                CameraTureActivity.actionStart(MainActivity.this);
                 break;
         }
 

@@ -1,21 +1,25 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
-
+    android:orientation="vertical"
+    >
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="camera"/>
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         >
         <Button
-            android:id="@+id/bt_camera"
+            android:id="@+id/bt_camera_surface"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Camera"
             />
         <Button
-            android:id="@+id/bt_camera2"
+            android:id="@+id/bt_camera_tureview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Camera2" />
@@ -23,4 +27,27 @@
     </LinearLayout>
 
 
-</RelativeLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="camera2"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        >
+        <Button
+            android:id="@+id/bt_camera2_surface"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Camera"
+            />
+        <Button
+            android:id="@+id/bt_camera2_tureview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Camera2" />
+
+    </LinearLayout>
+
+
+</LinearLayout>
