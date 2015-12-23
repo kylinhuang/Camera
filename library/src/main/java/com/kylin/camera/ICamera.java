@@ -8,6 +8,7 @@ import android.view.TextureView;
  */
 public interface ICamera {
 
+
     /**
      * 开启相机
      */
@@ -16,7 +17,7 @@ public interface ICamera {
     /**
      * 关闭相机
      */
-    void closeCamera();
+    void stopCameraPreview();
 
     /**
      * 切换相机

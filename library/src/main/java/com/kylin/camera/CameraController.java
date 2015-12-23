@@ -1,10 +1,14 @@
 package com.kylin.camera;
 
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.os.Build;
 import android.support.v4.util.SparseArrayCompat;
 import android.view.SurfaceHolder;
 import android.view.TextureView;
+
+import com.kylin.camera.bean.CameraEntity;
 
 /**
  */
@@ -30,6 +34,7 @@ public class CameraController  implements ICamera {
 
     private Camera.PreviewCallback mPreviewCallback ;
     private TextureView mTextureView;
+    private CameraEntity cameraEntity;
 
     public static CameraController getInstance() {
         synchronized (CameraHelper.class) {
@@ -87,9 +92,9 @@ public class CameraController  implements ICamera {
 
 
     @Override
-    public void closeCamera() {
+    public void stopCameraPreview() {
         CameraBaseHelper mCameraHelper = mCameraModeSupported.get(userApi);
-        mCameraHelper.closeCamera();
+        mCameraHelper.stopCameraPreview();
     }
 
     @Override
@@ -154,4 +159,17 @@ public class CameraController  implements ICamera {
     }
 
 
+    public void setCameraEntity(CameraEntity cameraEntity) {
+        CameraBaseHelper mCameraHelper = mCameraModeSupported.get(userApi);
+        mCameraHelper.setCameraEntity(cameraEntity);
+    }
+
+    /**
+     * 检查闪光灯
+     * @param context
+     * @return
+     */
+    public boolean checkFlashEnable(Context context) {
+        return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
+    }
 }

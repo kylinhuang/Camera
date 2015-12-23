@@ -11,6 +11,7 @@ import android.widget.Button;
 
 import com.kylin.camera.CameraController;
 import com.kylin.camera.CameraStatusCallback;
+import com.kylin.camera.bean.CameraEntity;
 
 public class CameraSurfaceActivity extends Activity implements View.OnClickListener {
 
@@ -26,7 +27,6 @@ public class CameraSurfaceActivity extends Activity implements View.OnClickListe
 
         }
     };
-
 
     /**
      * 相机状态错误 callback
@@ -64,6 +64,8 @@ public class CameraSurfaceActivity extends Activity implements View.OnClickListe
         CameraController.getInstance().setSurfaceHolder(surfaceview.getHolder());
         CameraController.getInstance().setCameraStatusCallback(mCameraStatusCallback);
         CameraController.getInstance().setPreviewCallback(mPreviewCallback);
+        CameraEntity mCameraEntity =  new CameraEntity();
+        CameraController.getInstance().setCameraEntity(mCameraEntity);
 
     }
 
@@ -108,7 +110,7 @@ public class CameraSurfaceActivity extends Activity implements View.OnClickListe
     @Override
     protected void onStop() {
         super.onStop();
-        CameraController.getInstance().closeCamera();
+        CameraController.getInstance().stopCameraPreview();
         CameraController.getInstance().releaseCamera();
 
     }

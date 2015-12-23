@@ -41,7 +41,7 @@ public class Camera2Helper  extends CameraBaseHelper{
     }
 
     @Override
-    public void closeCamera() {
+    public void stopCameraPreview() {
 
     }
 

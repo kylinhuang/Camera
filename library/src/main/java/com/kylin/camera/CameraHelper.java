@@ -1,9 +1,9 @@
 package com.kylin.camera;
 
-import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
+
 import java.io.IOException;
 
 /**
@@ -12,7 +12,7 @@ import java.io.IOException;
 public class CameraHelper  extends CameraBaseHelper {
 
     private static CameraHelper sInstance;
-    //相机数量
+    // 相机数量
     private int mTotalCameraCount;
     private int mDefaultCamera = Camera.CameraInfo.CAMERA_FACING_FRONT ;
     private int mCurCameraId;
@@ -55,11 +55,52 @@ public class CameraHelper  extends CameraBaseHelper {
             return;
         }
 
+        initCameraProperty();
+
     }
 
-    @Override
-    public void closeCamera() {
+    private void initCameraProperty() {
+        if (camera == null) {
+            return;
+        }
+        Camera.Parameters parameters = camera.getParameters();
+        if (mCameraEntity.isOpenFlashlight) {
+            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+        } else {
+            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+        }
 
+        if ( mCameraEntity.mPreviewSize[0] != 0 && mCameraEntity.mPreviewSize[1] != 0 ){
+            parameters.setPreviewSize(mCameraEntity.mPreviewSize[0], mCameraEntity.mPreviewSize[1]);
+        }
+
+        if ( mCameraEntity.mPreviewFpsRange[0] != 0 && mCameraEntity.mPreviewFpsRange[1] != 0 ){
+            parameters.setPreviewFpsRange(mCameraEntity.mPreviewFpsRange[0], mCameraEntity.mPreviewFpsRange[1]);
+        }
+
+
+        try {
+            camera.setParameters(parameters);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        setPreviewSize();
+    }
+
+
+
+    @Override
+    public void stopCameraPreview() {
+        if (null != camera ){
+            if (mCameraEntity.isAutoFocus) {
+                autoFocusManager.stop();
+            }
+
+            mSurfaceHolder.removeCallback(mCallback);
+            camera.setPreviewCallback(null);
+            camera.stopPreview();
+        }
     }
 
     @Override
@@ -73,10 +114,12 @@ public class CameraHelper  extends CameraBaseHelper {
     @Override
     public void releaseCamera() {
         if (null != camera ){
-            autoFocusManager.stop();
+            if (mCameraEntity.isAutoFocus) {
+                autoFocusManager.stop();
+            }
+
             mSurfaceHolder.removeCallback(mCallback);
             camera.setPreviewCallback(null);
-            camera.release();
         }
     }
 
@@ -101,19 +144,21 @@ public class CameraHelper  extends CameraBaseHelper {
                 }
             }
 
-            autoFocusManager = new AutoFocusManager(camera);
-            autoFocusManager.start();
+            if (mCameraEntity.isAutoFocus) {
+                autoFocusManager = new AutoFocusManager(camera);
+                autoFocusManager.start();
+            }
         }
     }
 
     private void initCamera() {
         try {
             mTotalCameraCount = Camera.getNumberOfCameras();
-            Camera.CameraInfo mcameraInfo = new Camera.CameraInfo();
-            for (int i = 0; i < mTotalCameraCount ; i++) {
-                Camera.getCameraInfo(i, mcameraInfo);
-                Log.e("Voip", mcameraInfo.orientation + " " + i);
-            }
+//            Camera.CameraInfo mcameraInfo = new Camera.CameraInfo();
+//            for (int i = 0; i < mTotalCameraCount ; i++) {
+//                Camera.getCameraInfo(i, mcameraInfo);
+//                Log.e("Voip", mcameraInfo.orientation + " " + i);
+//            }
         } catch (Exception e) {
 
         }
@@ -129,10 +174,6 @@ public class CameraHelper  extends CameraBaseHelper {
     }
 
 
-
-    public void setSurface(SurfaceTexture mSurfaceTexture){
-
-    }
 
     public void setSurfaceHolder(SurfaceHolder mSurfaceHolder){
         this.mSurfaceHolder = mSurfaceHolder ;
@@ -179,5 +220,35 @@ public class CameraHelper  extends CameraBaseHelper {
             result = (mCameraInfo.orientation ) % 360;
         }
         return result;
+    }
+
+
+    /**
+     * @param isChecked
+     * 设置闪关灯
+     */
+    public void setFlash(Boolean isChecked) {
+        if (camera == null) {
+            return;
+        }
+        Camera.Parameters parameters = camera.getParameters();
+        if (isChecked) {
+            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+        } else {
+            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+        }
+        try {
+            camera.setParameters(parameters);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setPreviewSize() {
+        if (camera == null) {
+            return;
+        }
+
+
     }
 }

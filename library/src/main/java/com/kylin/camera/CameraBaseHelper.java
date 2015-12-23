@@ -4,12 +4,15 @@ import android.hardware.Camera;
 import android.view.SurfaceHolder;
 import android.view.TextureView;
 
+import com.kylin.camera.bean.CameraEntity;
+
 /**
  */
 public class CameraBaseHelper  implements ICamera{
 
     CameraStatusCallback mCameraStatusCallback = null ;
     Camera.PreviewCallback mPreviewCallback = null;
+    public CameraEntity mCameraEntity = new CameraEntity();
 
     /**
      * 开启相机
@@ -19,7 +22,7 @@ public class CameraBaseHelper  implements ICamera{
     /**
      * 关闭相机
      */
-    public void closeCamera(){}
+    public void stopCameraPreview(){}
 
     /**
      * 切换相机
@@ -67,4 +70,7 @@ public class CameraBaseHelper  implements ICamera{
     public void setTextureView(TextureView mTextureView) {
     }
 
+    public void setCameraEntity(CameraEntity mCameraEntity) {
+        this.mCameraEntity = mCameraEntity;
+    }
 }

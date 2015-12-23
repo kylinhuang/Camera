@@ -110,7 +110,7 @@ public class CameraTureActivity extends Activity implements View.OnClickListener
     @Override
     protected void onStop() {
         super.onStop();
-        CameraController.getInstance().closeCamera();
+        CameraController.getInstance().stopCameraPreview();
         CameraController.getInstance().releaseCamera();
 
     }
