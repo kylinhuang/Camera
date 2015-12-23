@@ -2,8 +2,8 @@ package com.kylin.camera;
 
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
+import android.util.Log;
 import android.view.SurfaceHolder;
-
 import java.io.IOException;
 
 /**
@@ -16,11 +16,9 @@ public class CameraHelper  extends CameraBaseHelper {
     private int mTotalCameraCount;
     private int mDefaultCamera = Camera.CameraInfo.CAMERA_FACING_FRONT ;
     private int mCurCameraId;
-    private Camera.PictureCallback mPictureCallback;
-    private Camera.PreviewCallback mPreviewCallback;
     private Camera camera;
     private SurfaceHolder mSurfaceHolder;
-
+    private AutoFocusManager autoFocusManager;
 
 
     public static CameraHelper getInstance() {
@@ -41,22 +39,20 @@ public class CameraHelper  extends CameraBaseHelper {
     @Override
     public void openCamera() {
         // Find the ID of the default camera
-        Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
+        Camera.CameraInfo mCameraInfo = new Camera.CameraInfo();
         for (int i = 0; i < mTotalCameraCount ; i++) {
-            if (cameraInfo.facing == mDefaultCamera ) {
+            if (mCameraInfo.facing == mDefaultCamera ) {
                 mCurCameraId = i;
-                Camera.getCameraInfo(i, cameraInfo);
+                Camera.getCameraInfo(i, mCameraInfo);
                 break;
             }
         }
-        camera = Camera.open(mCurCameraId);
-        if (null != mSurfaceHolder ){
-            try {
-                camera.setPreviewDisplay(mSurfaceHolder);
-                camera.setDisplayOrientation(90);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try {
+            camera = Camera.open(mCurCameraId);
+        } catch (Exception e) {
+            Log.e("Voip" ,e.toString() );
+            if ( null != mCameraStatusCallback ) mCameraStatusCallback.error(CameraStatusCallback.CAMERA_OPEN);
+            return;
         }
 
     }
@@ -69,14 +65,19 @@ public class CameraHelper  extends CameraBaseHelper {
     @Override
     public void switchCamera() {
         mCurCameraId =  ++mCurCameraId % mTotalCameraCount ;
-        camera.release();
+        if (null != camera)
+            camera.release();
         openCamera();
+        startCameraPreview();
     }
 
     @Override
     public void releaseCamera() {
-        camera.setPreviewCallback(null);
-        camera.release();
+        if (null != camera ){
+            autoFocusManager.stop();
+            camera.setPreviewCallback(null);
+            camera.release();
+        }
     }
 
     @Override
@@ -84,35 +85,40 @@ public class CameraHelper  extends CameraBaseHelper {
         if (camera != null){
             camera.setPreviewCallback(mPreviewCallback);
             camera.startPreview();
-//            AutoFocusManager autoFocusManager = new AutoFocusManager( camera);
+
+            if (null != mSurfaceHolder ){
+                try {
+                    Camera.CameraInfo mCameraInfo = new Camera.CameraInfo();
+                    Camera.getCameraInfo(mCurCameraId, mCameraInfo);
+
+                    camera.setPreviewDisplay(mSurfaceHolder);
+
+                    int result = getOrientation(mCameraInfo);
+                    camera.setDisplayOrientation(result); //显示
+                } catch (IOException e) {
+                    if ( null != mCameraStatusCallback ) mCameraStatusCallback.error(CameraStatusCallback.CAMERA_PRIVE);
+                    e.printStackTrace();
+                }
+            }
+
+            autoFocusManager = new AutoFocusManager(camera);
+            autoFocusManager.start();
         }
     }
 
     private void initCamera() {
         try {
             mTotalCameraCount = Camera.getNumberOfCameras();
+            Camera.CameraInfo mcameraInfo = new Camera.CameraInfo();
+            for (int i = 0; i < mTotalCameraCount ; i++) {
+                Camera.getCameraInfo(i, mcameraInfo);
+                Log.e("Voip", mcameraInfo.orientation + " " + i);
+            }
         } catch (Exception e) {
 
         }
 
     }
-
-    /**
-     * 设置拍照 callback
-     * @param mPictureCallback
-     */
-    public void setPictureCallback(Camera.PictureCallback mPictureCallback) {
-        this.mPictureCallback = mPictureCallback ;
-    }
-
-    /**
-     * 设置预览 callback
-     * @param mPreviewCallback
-     */
-    public void setPreviewCallback(Camera.PreviewCallback mPreviewCallback) {
-        this.mPreviewCallback = mPreviewCallback ;
-    }
-
 
     /**
      * 拍照
@@ -125,7 +131,6 @@ public class CameraHelper  extends CameraBaseHelper {
 
 
     public void setSurface(SurfaceTexture mSurfaceTexture){
-//        mSurfaceTexture.
 
     }
 
@@ -137,13 +142,14 @@ public class CameraHelper  extends CameraBaseHelper {
     private SurfaceHolder.Callback mCallback = new SurfaceHolder.Callback() {
         @Override
         public void surfaceCreated(SurfaceHolder holder) {
-            if (null != mSurfaceHolder  && null != camera){
-                try {
-                    camera.setPreviewDisplay(mSurfaceHolder);
-                    camera.setDisplayOrientation(90);
-                } catch (IOException e) {
-                    e.printStackTrace();
+            if (null != mSurfaceHolder){
+                if ( null != camera ){
+                    startCameraPreview();
+                }else {
+                    openCamera();
+                    startCameraPreview();
                 }
+
             }
         }
 
@@ -154,8 +160,29 @@ public class CameraHelper  extends CameraBaseHelper {
 
         @Override
         public void surfaceDestroyed(SurfaceHolder holder) {
+            if ( null != camera ) {
+                camera.stopPreview();
+                camera.release();//加上这句，就OK！
+                camera = null;
+            }
 
         }
     };
 
+
+    /**
+     * @param mCameraInfo
+     * 通过 CameraInfo 获取 显示的旋转角度
+     * 参考 api setDisplayOrientation 注释更改
+     * @return
+     */
+    private int getOrientation(Camera.CameraInfo mCameraInfo){
+        int result ;
+        if (mCameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            result = (360 - mCameraInfo.orientation) % 360;  // compensate the mirror
+        } else {  // back-facing
+            result = (mCameraInfo.orientation ) % 360;
+        }
+        return result;
+    }
 }

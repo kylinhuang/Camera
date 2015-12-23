@@ -10,15 +10,40 @@ import android.view.View;
 import android.widget.Button;
 
 import com.kylin.camera.CameraController;
+import com.kylin.camera.CameraStatusCallback;
 
 public class CameraActivity extends Activity implements View.OnClickListener {
 
     private SurfaceView surfaceview;
     private Button btTakePicture;
     private Button btSwitchCamera;
+    /**
+     * 拍照
+     */
     private Camera.PictureCallback mTakePicture = new Camera.PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
+
+        }
+    };
+
+
+    /**
+     * 相机状态错误 callback
+     */
+    private CameraStatusCallback mCameraStatusCallback = new CameraStatusCallback() {
+        @Override
+        public void error(int status) {
+
+        }
+    };
+
+    /**
+     * 获取相机数据
+     */
+    private Camera.PreviewCallback mPreviewCallback = new Camera.PreviewCallback() {
+        @Override
+        public void onPreviewFrame(byte[] data, Camera camera) {
 
         }
     };
@@ -35,6 +60,10 @@ public class CameraActivity extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
         initView();
+        CameraController.getInstance().useAPI(CameraController.CAMERA_API); //
+        CameraController.getInstance().setSurfaceHolder(surfaceview.getHolder());
+        CameraController.getInstance().setCameraStatusCallback(mCameraStatusCallback);
+        CameraController.getInstance().setPreviewCallback(mPreviewCallback);
 
     }
 
@@ -45,8 +74,6 @@ public class CameraActivity extends Activity implements View.OnClickListener {
     }
 
     private void initData() {
-        CameraController.getInstance().useAPI(CameraController.CAMERA_API);
-        CameraController.getInstance().setSurfaceHolder(surfaceview.getHolder());
         CameraController.getInstance().openCamera();
         CameraController.getInstance().startCameraPreview();
     }
@@ -64,7 +91,6 @@ public class CameraActivity extends Activity implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.bt_takepicture :
-
                 CameraController.getInstance().takePicture(mTakePicture);
                 break;
             case R.id.bt_switch_camera :

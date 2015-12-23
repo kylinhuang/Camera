@@ -6,6 +6,7 @@ import android.view.SurfaceHolder;
 /**
  */
 public interface ICamera {
+
     /**
      * 开启相机
      */
@@ -35,4 +36,6 @@ public interface ICamera {
     void takePicture(Camera.PictureCallback mPictureCallback);
 
     void setSurfaceHolder(SurfaceHolder mSurfaceHolder);
+
+
 }

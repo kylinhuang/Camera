@@ -9,6 +9,13 @@ import android.view.SurfaceHolder;
 /**
  */
 public class CameraController  implements ICamera {
+    /**
+     * 相机状态 callback
+     *
+     * 相机打开失败 切换失败 等相机状态 以及callback
+     */
+    CameraStatusCallback mCameraStatusCallback = null ;
+
     private int userApi = CAMERA_API;
     public static final int CAMERA_API   = 1  ;
     public static final int CAMERA_API2  = 2  ;
@@ -20,6 +27,8 @@ public class CameraController  implements ICamera {
         mCameraModeSupported.put(CAMERA_API, CameraHelper.getInstance());
         mCameraModeSupported.put(CAMERA_API2, Camera2Helper.getInstance());
     }
+
+    private Camera.PreviewCallback mPreviewCallback ;
 
     public static CameraController getInstance() {
         synchronized (CameraHelper.class) {
@@ -39,6 +48,8 @@ public class CameraController  implements ICamera {
 
     /**
      * 使用 Camera API
+     * @param api CAMERA_API2
+     *            CAMERA_API
      */
     public Boolean useAPI(int api){
         if (  !isSupportCamera2 ){ //不支持Camera2
@@ -114,7 +125,30 @@ public class CameraController  implements ICamera {
 
     }
 
+    /**
+     * @param mCameraStatusCallback
+     * 设置 camera status callback
+     *
+     *  CameraStatusCallback.error(int status)
+     *
+     *  public static final int CAMERA_OPEN = 1 ;       － 相机打开错误
+        public static final int CAMERA_PRIVE = 2 ;      － 相机预览错误
+        public static final int CAMERA_SWITCH = 3 ;     － 相机切换错误
+     *
+     */
+    public void setCameraStatusCallback(CameraStatusCallback mCameraStatusCallback){
+        this.mCameraStatusCallback = mCameraStatusCallback;
+    }
 
+    /**
+     * 设置预览 callback
+     * @param mPreviewCallback
+     */
+    public void setPreviewCallback(Camera.PreviewCallback mPreviewCallback) {
+        this.mPreviewCallback = mPreviewCallback ;
+        CameraBaseHelper mCameraHelper = mCameraModeSupported.get(userApi);
+        mCameraHelper.setPreviewCallback(mPreviewCallback);
+    }
 
 
 }

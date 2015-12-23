@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.kylin.camera.help;
+package com.kylin.camera;
 
 import android.hardware.Camera;
 import android.os.AsyncTask;
