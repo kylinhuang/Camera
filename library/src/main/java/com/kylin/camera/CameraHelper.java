@@ -1,6 +1,5 @@
 package com.kylin.camera;
 
-import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -76,8 +75,7 @@ public class CameraHelper  extends CameraBaseHelper {
         }
 
         if ( mCameraEntity.mPreviewSize[0] != 0 && mCameraEntity.mPreviewSize[1] != 0 ){
-//            parameters.setPreviewSize(mCameraEntity.mPreviewSize[0], mCameraEntity.mPreviewSize[1]);
-            parameters.setPreviewSize(320, 240);
+            parameters.setPreviewSize(mCameraEntity.mPreviewSize[0], mCameraEntity.mPreviewSize[1]);
         }
 
         if ( mCameraEntity.mPreviewFpsRange[0] != 0 && mCameraEntity.mPreviewFpsRange[1] != 0 ){
@@ -85,8 +83,7 @@ public class CameraHelper  extends CameraBaseHelper {
         }
 
          /* 设置相片格式为JPEG */
-        parameters.setPictureFormat(PixelFormat.JPEG);
-//        parameters.setRotation(180);
+        parameters.setPictureFormat(mCameraEntity.mPictureFormat);
 
         try {
             camera.setParameters(parameters);
@@ -129,6 +126,7 @@ public class CameraHelper  extends CameraBaseHelper {
 
             mSurfaceHolder.removeCallback(mCallback);
             camera.setPreviewCallback(null);
+            camera.release();
             camera = null ;
         }
     }

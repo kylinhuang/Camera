@@ -1,5 +1,7 @@
 package com.kylin.camera.bean;
 
+import android.graphics.PixelFormat;
+
 /**
  * Created by zhouxiyuan on 15/12/23.
  */
@@ -14,11 +16,16 @@ public class CameraEntity {
      */
     public int [] mPreviewSize = new int[2] ;
 
-
-
     /**
      * setPreviewFpsRange
      */
     public int [] mPreviewFpsRange = new int[2] ;
+
+    /**
+     * 拍照格式
+     * 默认 PixelFormat.JPEG
+     */
+    public int mPictureFormat = PixelFormat.JPEG ;
+
 
 }
