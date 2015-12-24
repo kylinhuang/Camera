@@ -1,5 +1,6 @@
 package com.kylin.camera;
 
+import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -31,7 +32,11 @@ public class CameraHelper  extends CameraBaseHelper {
     }
 
     private CameraHelper(){
-        initCamera();
+        try {
+            mTotalCameraCount = Camera.getNumberOfCameras();
+        } catch (Exception e) {
+
+        }
     }
 
 
@@ -71,13 +76,17 @@ public class CameraHelper  extends CameraBaseHelper {
         }
 
         if ( mCameraEntity.mPreviewSize[0] != 0 && mCameraEntity.mPreviewSize[1] != 0 ){
-            parameters.setPreviewSize(mCameraEntity.mPreviewSize[0], mCameraEntity.mPreviewSize[1]);
+//            parameters.setPreviewSize(mCameraEntity.mPreviewSize[0], mCameraEntity.mPreviewSize[1]);
+            parameters.setPreviewSize(320, 240);
         }
 
         if ( mCameraEntity.mPreviewFpsRange[0] != 0 && mCameraEntity.mPreviewFpsRange[1] != 0 ){
             parameters.setPreviewFpsRange(mCameraEntity.mPreviewFpsRange[0], mCameraEntity.mPreviewFpsRange[1]);
         }
 
+         /* 设置相片格式为JPEG */
+        parameters.setPictureFormat(PixelFormat.JPEG);
+//        parameters.setRotation(180);
 
         try {
             camera.setParameters(parameters);
@@ -120,6 +129,7 @@ public class CameraHelper  extends CameraBaseHelper {
 
             mSurfaceHolder.removeCallback(mCallback);
             camera.setPreviewCallback(null);
+            camera = null ;
         }
     }
 
@@ -137,7 +147,7 @@ public class CameraHelper  extends CameraBaseHelper {
                     camera.setPreviewDisplay(mSurfaceHolder);
 
                     int result = getOrientation(mCameraInfo);
-                    camera.setDisplayOrientation(result); //显示
+                    camera.setDisplayOrientation(result); //显示  --- 与拍照数据有关
                 } catch (IOException e) {
                     if ( null != mCameraStatusCallback ) mCameraStatusCallback.error(CameraStatusCallback.CAMERA_PRIVE);
                     e.printStackTrace();
@@ -151,26 +161,13 @@ public class CameraHelper  extends CameraBaseHelper {
         }
     }
 
-    private void initCamera() {
-        try {
-            mTotalCameraCount = Camera.getNumberOfCameras();
-//            Camera.CameraInfo mcameraInfo = new Camera.CameraInfo();
-//            for (int i = 0; i < mTotalCameraCount ; i++) {
-//                Camera.getCameraInfo(i, mcameraInfo);
-//                Log.e("Voip", mcameraInfo.orientation + " " + i);
-//            }
-        } catch (Exception e) {
-
-        }
-
-    }
 
     /**
      * 拍照
      */
     public void takePicture(Camera.PictureCallback mPictureCallback) {
         if (camera != null)
-            camera.takePicture(null, null, mPictureCallback);
+            camera.takePicture(null, mPictureCallback, mPictureCallback);
     }
 
 

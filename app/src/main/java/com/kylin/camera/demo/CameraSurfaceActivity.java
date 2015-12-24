@@ -3,6 +3,8 @@ package com.kylin.camera.demo;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.view.SurfaceView;
@@ -12,6 +14,11 @@ import android.widget.Button;
 import com.kylin.camera.CameraController;
 import com.kylin.camera.CameraStatusCallback;
 import com.kylin.camera.bean.CameraEntity;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class CameraSurfaceActivity extends Activity implements View.OnClickListener {
 
@@ -23,7 +30,22 @@ public class CameraSurfaceActivity extends Activity implements View.OnClickListe
      */
     private Camera.PictureCallback mTakePicture = new Camera.PictureCallback() {
         @Override
-        public void onPictureTaken(byte[] data, Camera camera) {
+        public void onPictureTaken(final byte[] data, final Camera camera) {
+            if (null==data)return;
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    BitmapFactory.Options mOptions = new BitmapFactory.Options();
+                    mOptions.inJustDecodeBounds = false;
+                    mOptions.inSampleSize = 10;   //width，hight设为原来的十分一
+                    Bitmap bitmap = BitmapFactory.decodeByteArray
+                            (data, 0, data.length ,mOptions);
+
+                    saveMyBitmap(System.currentTimeMillis()+"",bitmap);
+                    bitmap.recycle();
+                }
+            }).start();
 
         }
     };
@@ -43,8 +65,31 @@ public class CameraSurfaceActivity extends Activity implements View.OnClickListe
      */
     private Camera.PreviewCallback mPreviewCallback = new Camera.PreviewCallback() {
         @Override
-        public void onPreviewFrame(byte[] data, Camera camera) {
+        public void onPreviewFrame(final byte[] data, final Camera camera) {
 
+//            final byte [] updata = new byte [data.length] ;
+//            System.arraycopy(data, 0, updata, 0, data.length) ;
+//
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    int imageFormat=camera.getParameters().getPreviewFormat();
+//                    Camera.Size size = camera.getParameters().getPreviewSize();
+//                    int w = size.width;
+//                    int h = size.height;
+//                    Rect rect=new Rect(0,0,w,h);
+//                    YuvImage yuvImg = new YuvImage(updata , imageFormat , w , h ,null);
+//                    ByteArrayOutputStream outputstream = new ByteArrayOutputStream();
+//                    yuvImg.compressToJpeg(rect, 100, outputstream);
+//                    BitmapFactory.Options mOptions = new BitmapFactory.Options();
+//                    mOptions.inJustDecodeBounds = false;
+//                    mOptions.inSampleSize = 10;   //width，hight设为原来的十分一
+//                    Bitmap bitmap = BitmapFactory.decodeByteArray(outputstream.toByteArray(), 0, outputstream.size(),mOptions);
+//
+//                    saveMyBitmap(System.currentTimeMillis()+"",bitmap);
+//                    bitmap.recycle();
+//                }
+//            }).start();
         }
     };
 
@@ -110,8 +155,34 @@ public class CameraSurfaceActivity extends Activity implements View.OnClickListe
     @Override
     protected void onStop() {
         super.onStop();
-        CameraController.getInstance().stopCameraPreview();
         CameraController.getInstance().releaseCamera();
 
     }
+
+
+    public void saveMyBitmap(String bitName,Bitmap mBitmap){
+        File f = new File("/sdcard/Voip/" + bitName + ".png");
+        try {
+            f.createNewFile();
+        } catch (IOException e) {
+        }
+        FileOutputStream fOut = null;
+        try {
+            fOut = new FileOutputStream(f);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        mBitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+        try {
+            fOut.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            fOut.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
