@@ -35,6 +35,8 @@ public interface ICamera {
      */
     void startCameraPreview();
 
+    Boolean isOpen();
+
     void takePicture(Camera.PictureCallback mPictureCallback);
 
     void setSurfaceHolder(SurfaceHolder mSurfaceHolder);

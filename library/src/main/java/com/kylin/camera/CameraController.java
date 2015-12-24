@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.os.Build;
-import android.support.v4.util.SparseArrayCompat;
 import android.view.SurfaceHolder;
 import android.view.TextureView;
 
@@ -13,6 +12,7 @@ import com.kylin.camera.bean.CameraEntity;
 /**
  */
 public class CameraController  implements ICamera {
+    private final Context mContext ;
     /**
      * 相机状态 callback
      *
@@ -23,29 +23,27 @@ public class CameraController  implements ICamera {
     private int userApi = CAMERA_API;
     public static final int CAMERA_API   = 1  ;
     public static final int CAMERA_API2  = 2  ;
-    private static SparseArrayCompat<CameraBaseHelper> mCameraModeSupported = new SparseArrayCompat<CameraBaseHelper>();
     private static CameraController sInstance;
     private Boolean isSupportCamera2 = false;
 
-    static {
-        mCameraModeSupported.put(CAMERA_API, CameraHelper.getInstance());
-        mCameraModeSupported.put(CAMERA_API2, Camera2Helper.getInstance());
-    }
 
     private Camera.PreviewCallback mPreviewCallback ;
     private TextureView mTextureView;
     private CameraEntity cameraEntity;
 
-    public static CameraController getInstance() {
+    public static CameraController getInstance(Context mContext) {
         synchronized (CameraHelper.class) {
             if (sInstance == null) {
-                sInstance = new CameraController();
+                sInstance = new CameraController(mContext);
             }
         }
         return sInstance;
     }
 
-    private CameraController() {
+    private CameraController(Context mContext) {
+        this.mContext = mContext ;
+//        mCameraModeSupported.put(CAMERA_API, CameraHelper.getInstance(mContext));
+//        mCameraModeSupported.put(CAMERA_API2, Camera2Helper.getInstance(mContext));
         isSupportCamera2 = isSupportCamera2();
         if(isSupportCamera2)
             userApi = CAMERA_API2 ;
@@ -86,51 +84,63 @@ public class CameraController  implements ICamera {
 
     @Override
     public void openCamera() {
-        CameraBaseHelper mCameraHelper = mCameraModeSupported.get(userApi);
-        mCameraHelper.openCamera();
+        CameraBaseHelper mCameraHelper = getCameraHelper(userApi) ;
+        if (null != mCameraHelper)
+            mCameraHelper.openCamera();
     }
+
+
 
 
     @Override
     public void stopCameraPreview() {
-        CameraBaseHelper mCameraHelper = mCameraModeSupported.get(userApi);
-        mCameraHelper.stopCameraPreview();
+        CameraBaseHelper mCameraHelper = getCameraHelper(userApi) ;
+        if (null != mCameraHelper)
+            mCameraHelper.stopCameraPreview();
     }
 
     @Override
     public void switchCamera() {
-        CameraBaseHelper mCameraHelper = mCameraModeSupported.get(userApi);
-        mCameraHelper.switchCamera();
+        CameraBaseHelper mCameraHelper = getCameraHelper(userApi) ;
+        if (null != mCameraHelper)
+            mCameraHelper.switchCamera();
     }
 
     @Override
     public void releaseCamera() {
-        CameraBaseHelper mCameraHelper = mCameraModeSupported.get(userApi);
-        mCameraHelper.releaseCamera();
+        CameraBaseHelper mCameraHelper = getCameraHelper(userApi);
+        if (null != mCameraHelper)
+            mCameraHelper.releaseCamera();
     }
 
     @Override
     public void startCameraPreview() {
-        CameraBaseHelper mCameraHelper = mCameraModeSupported.get(userApi);
-        mCameraHelper.startCameraPreview();
+        CameraBaseHelper mCameraHelper = getCameraHelper(userApi);
+        if (null != mCameraHelper)
+            mCameraHelper.startCameraPreview();
     }
+
+
 
     @Override
     public void takePicture(Camera.PictureCallback mPictureCallback) {
-        CameraBaseHelper mCameraHelper = mCameraModeSupported.get(userApi);
-        mCameraHelper.takePicture(mPictureCallback);
+        CameraBaseHelper mCameraHelper = getCameraHelper(userApi);
+        if (null != mCameraHelper)
+            mCameraHelper.takePicture(mPictureCallback);
     }
 
     @Override
     public void setSurfaceHolder(SurfaceHolder mSurfaceHolder) {
-        CameraBaseHelper mCameraHelper = mCameraModeSupported.get(userApi);
-        mCameraHelper.setSurfaceHolder(mSurfaceHolder);
+        CameraBaseHelper mCameraHelper = getCameraHelper(userApi);
+        if (null != mCameraHelper)
+            mCameraHelper.setSurfaceHolder(mSurfaceHolder);
     }
 
     public void setTextureView(TextureView mTextureView){
         this.mTextureView = mTextureView ;
-        CameraBaseHelper mCameraHelper = mCameraModeSupported.get(userApi);
-        mCameraHelper.setTextureView(mTextureView);
+        CameraBaseHelper mCameraHelper = getCameraHelper(userApi);
+        if (null != mCameraHelper)
+            mCameraHelper.setTextureView(mTextureView);
     }
 
     /**
@@ -140,8 +150,8 @@ public class CameraController  implements ICamera {
      *  CameraStatusCallback.error(int status)
      *
      *  public static final int CAMERA_OPEN = 1 ;       － 相机打开错误
-        public static final int CAMERA_PRIVE = 2 ;      － 相机预览错误
-        public static final int CAMERA_SWITCH = 3 ;     － 相机切换错误
+     *  public static final int CAMERA_PRIVE = 2 ;      － 相机预览错误
+     *  public static final int CAMERA_SWITCH = 3 ;     － 相机切换错误
      *
      */
     public void setCameraStatusCallback(CameraStatusCallback mCameraStatusCallback){
@@ -154,14 +164,26 @@ public class CameraController  implements ICamera {
      */
     public void setPreviewCallback(Camera.PreviewCallback mPreviewCallback) {
         this.mPreviewCallback = mPreviewCallback ;
-        CameraBaseHelper mCameraHelper = mCameraModeSupported.get(userApi);
-        mCameraHelper.setPreviewCallback(mPreviewCallback);
+        CameraBaseHelper mCameraHelper = getCameraHelper(userApi);
+        if (null != mCameraHelper )
+            mCameraHelper.setPreviewCallback(mPreviewCallback);
     }
 
 
     public void setCameraEntity(CameraEntity cameraEntity) {
-        CameraBaseHelper mCameraHelper = mCameraModeSupported.get(userApi);
-        mCameraHelper.setCameraEntity(cameraEntity);
+        CameraBaseHelper mCameraHelper = getCameraHelper(userApi);
+        if (null != mCameraHelper )
+            mCameraHelper.setCameraEntity(cameraEntity);
+    }
+
+
+    @Override
+    public Boolean isOpen() {
+        CameraBaseHelper mCameraHelper = getCameraHelper(userApi);
+        if (null != mCameraHelper )
+            return mCameraHelper.isOpen();
+
+        return false ;
     }
 
     /**
@@ -171,5 +193,16 @@ public class CameraController  implements ICamera {
      */
     public boolean checkFlashEnable(Context context) {
         return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
+    }
+
+
+    private CameraBaseHelper getCameraHelper(int userApi) {
+        switch (userApi){
+            case CAMERA_API :
+                return CameraHelper.getInstance(mContext);
+            case CAMERA_API2 :
+                return Camera2Helper.getInstance(mContext);
+        }
+        return null;
     }
 }

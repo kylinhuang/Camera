@@ -16,13 +16,13 @@
             android:id="@+id/bt_camera_surface"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Camera"
+            android:text="camera_surface"
             />
         <Button
             android:id="@+id/bt_camera_tureview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Camera2" />
+            android:text="camera_tureview" />
 
     </LinearLayout>
 
@@ -39,13 +39,13 @@
             android:id="@+id/bt_camera2_surface"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Camera"
+            android:text="camera2_surface"
             />
         <Button
             android:id="@+id/bt_camera2_tureview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Camera2" />
+            android:text="camera2_tureview" />
 
     </LinearLayout>
 

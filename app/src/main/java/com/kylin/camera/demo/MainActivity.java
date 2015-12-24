@@ -27,6 +27,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
             case R.id.bt_camera_tureview :
                 CameraTureActivity.actionStart(MainActivity.this);
                 break;
+            case R.id.bt_camera2_surface :
+                Camera2SurfaceActivity.actionStart(MainActivity.this);
+                break;
+            case R.id.bt_camera2_tureview :
+                Camera2TureActivity.actionStart(MainActivity.this);
+                break;
         }
 
     }

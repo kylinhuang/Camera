@@ -1,5 +1,6 @@
 package com.kylin.camera;
 
+import android.content.Context;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -16,21 +17,22 @@ public class CameraHelper  extends CameraBaseHelper {
     private int mTotalCameraCount;
     private int mDefaultCamera = Camera.CameraInfo.CAMERA_FACING_FRONT ;
     private int mCurCameraId;
-    private Camera camera;
+
     private SurfaceHolder mSurfaceHolder;
     private AutoFocusManager autoFocusManager;
 
 
-    public static CameraHelper getInstance() {
+    public static CameraHelper getInstance(Context mContext) {
         synchronized (CameraHelper.class) {
             if (sInstance == null) {
-                sInstance = new CameraHelper();
+                sInstance = new CameraHelper(mContext);
             }
         }
         return sInstance ;
     }
 
-    private CameraHelper(){
+    private CameraHelper(Context mContext){
+        this.mContext = mContext;
         try {
             mTotalCameraCount = Camera.getNumberOfCameras();
         } catch (Exception e) {
@@ -54,8 +56,8 @@ public class CameraHelper  extends CameraBaseHelper {
         try {
             camera = Camera.open(mCurCameraId);
         } catch (Exception e) {
-            Log.e("Voip" ,e.toString() );
-            if ( null != mCameraStatusCallback ) mCameraStatusCallback.error(CameraStatusCallback.CAMERA_OPEN);
+            Log.e("Voip", e.toString());
+            if ( null != mCameraStatusCallback ) mCameraStatusCallback.cameraError(CameraStatusCallback.CAMERA_OPEN);
             return;
         }
 
@@ -82,6 +84,7 @@ public class CameraHelper  extends CameraBaseHelper {
             parameters.setPreviewFpsRange(mCameraEntity.mPreviewFpsRange[0], mCameraEntity.mPreviewFpsRange[1]);
         }
 
+        parameters.setAutoWhiteBalanceLock(false);
          /* 设置相片格式为JPEG */
         parameters.setPictureFormat(mCameraEntity.mPictureFormat);
 
@@ -91,7 +94,6 @@ public class CameraHelper  extends CameraBaseHelper {
             e.printStackTrace();
         }
 
-        setPreviewSize();
     }
 
 
@@ -103,7 +105,7 @@ public class CameraHelper  extends CameraBaseHelper {
                 autoFocusManager.stop();
             }
 
-            mSurfaceHolder.removeCallback(mCallback);
+//            mSurfaceHolder.removeCallback(mCallback);
             camera.setPreviewCallback(null);
             camera.stopPreview();
         }
@@ -118,14 +120,19 @@ public class CameraHelper  extends CameraBaseHelper {
     }
 
     @Override
-    public void releaseCamera() {
+    public void releaseCamera()  {
         if (null != camera ){
             if (mCameraEntity.isAutoFocus) {
                 autoFocusManager.stop();
             }
 
-            mSurfaceHolder.removeCallback(mCallback);
+//            mSurfaceHolder.removeCallback(mCallback);
             camera.setPreviewCallback(null);
+            try {
+                camera.setPreviewTexture(null);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             camera.release();
             camera = null ;
         }
@@ -137,19 +144,23 @@ public class CameraHelper  extends CameraBaseHelper {
             camera.setPreviewCallback(mPreviewCallback);
             camera.startPreview();
 
-            if (null != mSurfaceHolder ){
-                try {
-                    Camera.CameraInfo mCameraInfo = new Camera.CameraInfo();
-                    Camera.getCameraInfo(mCurCameraId, mCameraInfo);
+            try {
+                Camera.CameraInfo mCameraInfo = new Camera.CameraInfo();
+                Camera.getCameraInfo(mCurCameraId, mCameraInfo);
 
+                if (null != mSurfaceHolder){
                     camera.setPreviewDisplay(mSurfaceHolder);
-
-                    int result = getOrientation(mCameraInfo);
-                    camera.setDisplayOrientation(result); //显示  --- 与拍照数据有关
-                } catch (IOException e) {
-                    if ( null != mCameraStatusCallback ) mCameraStatusCallback.error(CameraStatusCallback.CAMERA_PRIVE);
-                    e.printStackTrace();
                 }
+
+                if (null != mTextureView)
+                    camera.setPreviewTexture(mTextureView.getSurfaceTexture());
+
+
+                int result = getOrientation(mCameraInfo);
+                camera.setDisplayOrientation(result); //显示  --- 与拍照数据有关
+            } catch (IOException e) {
+                if ( null != mCameraStatusCallback ) mCameraStatusCallback.cameraError(CameraStatusCallback.CAMERA_PRIVE);
+                e.printStackTrace();
             }
 
             if (mCameraEntity.isAutoFocus) {
@@ -169,36 +180,36 @@ public class CameraHelper  extends CameraBaseHelper {
     }
 
 
+    /**
+     * @param mSurfaceHolder
+     * 设置 setSurfaceHolder 显示
+     * @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        if (null != mSurfaceHolder){
+            if ( null != camera ){
+                startCameraPreview();
+            }else {
+                openCamera();
+                startCameraPreview();
+            }
 
-    public void setSurfaceHolder(SurfaceHolder mSurfaceHolder){
-        this.mSurfaceHolder = mSurfaceHolder ;
-        mSurfaceHolder.addCallback(mCallback);
+        }
     }
 
-    private SurfaceHolder.Callback mCallback = new SurfaceHolder.Callback() {
-        @Override
-        public void surfaceCreated(SurfaceHolder holder) {
-            if (null != mSurfaceHolder){
-                if ( null != camera ){
-                    startCameraPreview();
-                }else {
-                    openCamera();
-                    startCameraPreview();
-                }
+     @Override
+     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 
-            }
-        }
+     }
 
-        @Override
-        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+     @Override
+     public void surfaceDestroyed(SurfaceHolder holder) {
+        releaseCamera();
+     }
+     */
+    public void setSurfaceHolder(SurfaceHolder mSurfaceHolder){
+        this.mSurfaceHolder = mSurfaceHolder ;
+    }
 
-        }
-
-        @Override
-        public void surfaceDestroyed(SurfaceHolder holder) {
-            releaseCamera();
-        }
-    };
 
 
     /**
@@ -217,33 +228,4 @@ public class CameraHelper  extends CameraBaseHelper {
         return result;
     }
 
-
-    /**
-     * @param isChecked
-     * 设置闪关灯
-     */
-    public void setFlash(Boolean isChecked) {
-        if (camera == null) {
-            return;
-        }
-        Camera.Parameters parameters = camera.getParameters();
-        if (isChecked) {
-            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
-        } else {
-            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-        }
-        try {
-            camera.setParameters(parameters);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void setPreviewSize() {
-        if (camera == null) {
-            return;
-        }
-
-
-    }
 }

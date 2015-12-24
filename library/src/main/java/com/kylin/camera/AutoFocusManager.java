@@ -18,7 +18,6 @@ package com.kylin.camera;
 
 import android.hardware.Camera;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -65,7 +64,6 @@ final class AutoFocusManager implements Camera.AutoFocusCallback {
         newTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         outstandingTask = newTask;
       } catch (RejectedExecutionException ree) {
-        Log.w(TAG, "Could not request auto focus", ree);
       }
     }
   }
@@ -79,7 +77,6 @@ final class AutoFocusManager implements Camera.AutoFocusCallback {
           focusing = true;
         } catch (RuntimeException re) {
           // Have heard RuntimeException reported in Android 4.0.x+; continue?
-          Log.w(TAG, "Unexpected exception while focusing", re);
           // Try again later to keep cycle going
           autoFocusAgainLater();
         }
@@ -105,7 +102,6 @@ final class AutoFocusManager implements Camera.AutoFocusCallback {
         camera.cancelAutoFocus();
       } catch (RuntimeException re) {
         // Have heard RuntimeException reported in Android 4.0.x+; continue?
-        Log.w(TAG, "Unexpected exception while cancelling focusing", re);
       }
     }
   }

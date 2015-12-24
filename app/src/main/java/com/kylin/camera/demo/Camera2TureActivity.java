@@ -13,7 +13,7 @@ import android.widget.Button;
 import com.kylin.camera.CameraController;
 import com.kylin.camera.CameraStatusCallback;
 
-public class CameraTureActivity extends Activity implements View.OnClickListener {
+public class Camera2TureActivity extends Activity implements View.OnClickListener {
 
     private TextureView mTextureView;
     private Button btTakePicture;
@@ -51,6 +51,8 @@ public class CameraTureActivity extends Activity implements View.OnClickListener
     private TextureView.SurfaceTextureListener mSurfaceTexture = new TextureView.SurfaceTextureListener() {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+
+
             if ( CameraController.getInstance(getApplicationContext()).isOpen() ) {
                 CameraController.getInstance(getApplicationContext()).startCameraPreview();
             }else {
@@ -80,20 +82,20 @@ public class CameraTureActivity extends Activity implements View.OnClickListener
     /**
      */
     public static void actionStart(Context context ) {
-        Intent intent = new Intent(context, CameraTureActivity.class);
+        Intent intent = new Intent(context, Camera2TureActivity.class);
         context.startActivity(intent);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_camera_true);
+        setContentView(R.layout.activity_camera2_true);
         initView();
-        CameraController.getInstance(getApplicationContext()).useAPI(CameraController.CAMERA_API); //
-        CameraController.getInstance(getApplicationContext()).setTextureView(mTextureView);
+        CameraController.getInstance(Camera2TureActivity.this).useAPI(CameraController.CAMERA_API2); //
+        CameraController.getInstance(Camera2TureActivity.this).setTextureView(mTextureView);
 
-        CameraController.getInstance(getApplicationContext()).setCameraStatusCallback(mCameraStatusCallback);
-        CameraController.getInstance(getApplicationContext()).setPreviewCallback(mPreviewCallback);
+        CameraController.getInstance(Camera2TureActivity.this).setCameraStatusCallback(mCameraStatusCallback);
+        CameraController.getInstance(Camera2TureActivity.this).setPreviewCallback(mPreviewCallback);
 
     }
 
@@ -104,8 +106,8 @@ public class CameraTureActivity extends Activity implements View.OnClickListener
     }
 
     private void initData() {
-        CameraController.getInstance(getApplicationContext()).openCamera();
-        CameraController.getInstance(getApplicationContext()).startCameraPreview();
+        CameraController.getInstance(Camera2TureActivity.this).openCamera();
+        CameraController.getInstance(Camera2TureActivity.this).startCameraPreview();
     }
 
     private void initView() {

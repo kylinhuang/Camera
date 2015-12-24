@@ -32,6 +32,9 @@
 
         <activity android:name=".CameraSurfaceActivity" />
         <activity android:name=".CameraTureActivity" />
+
+        <activity android:name=".Camera2SurfaceActivity" />
+        <activity android:name=".Camera2TureActivity" />
     </application>
 
 </manifest>

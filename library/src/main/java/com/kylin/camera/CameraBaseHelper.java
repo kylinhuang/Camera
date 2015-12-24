@@ -1,5 +1,6 @@
 package com.kylin.camera;
 
+import android.content.Context;
 import android.hardware.Camera;
 import android.view.SurfaceHolder;
 import android.view.TextureView;
@@ -8,11 +9,14 @@ import com.kylin.camera.bean.CameraEntity;
 
 /**
  */
-public class CameraBaseHelper  implements ICamera{
+public class CameraBaseHelper implements ICamera{
 
     CameraStatusCallback mCameraStatusCallback = null ;
     Camera.PreviewCallback mPreviewCallback = null;
     public CameraEntity mCameraEntity = new CameraEntity();
+    public Camera camera;
+    public TextureView mTextureView;
+    public Context mContext;
 
     /**
      * 开启相机
@@ -39,6 +43,15 @@ public class CameraBaseHelper  implements ICamera{
      * 开始预览
      */
     public void startCameraPreview(){}
+
+    @Override
+    public Boolean isOpen() {
+        if (camera == null){
+            return false ;
+        }else {
+            return true ;
+        }
+    }
 
     /**
      * 拍照
@@ -68,6 +81,8 @@ public class CameraBaseHelper  implements ICamera{
 
     @Override
     public void setTextureView(TextureView mTextureView) {
+        this.mTextureView = mTextureView ;
+
     }
 
     public void setCameraEntity(CameraEntity mCameraEntity) {
